@@ -11,4 +11,8 @@ jobs:
       project: 'roboshop'
       component: 'catalogue'
     secrets: inherit
+    permissions:
+      contents: read    # Required to check out code or read the repo
+      statuses: write
+
   
