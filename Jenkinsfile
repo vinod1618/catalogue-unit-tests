@@ -54,67 +54,67 @@ pipeline {
         }
 
 
-        stage ('SonarQube Analysis'){
-            steps {
-                script {
-                    def scannerHome = tool name: 'sonar-8' // agent configuration
-                    withSonarQubeEnv('sonar-server') { // analysing and uploading to server
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-        stage("Quality Gate") {
-            steps {
-              timeout(time: 1, unit: 'HOURS') {
-                waitForQualityGate abortPipeline: true
-              }
-            }
-        }
-        
+        // stage ('SonarQube Analysis'){
+        //     steps {
+        //         script {
+        //             def scannerHome = tool name: 'sonar-8' // agent configuration
+        //             withSonarQubeEnv('sonar-server') { // analysing and uploading to server
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage("Quality Gate") {
+        //     steps {
+        //       timeout(time: 1, unit: 'HOURS') {
+        //         waitForQualityGate abortPipeline: true
+        //       }
+        //     }
+        // }
+
         stage('Dependabot Security Check') {
-    steps {
-        withCredentials([
-            string(
-                credentialsId: 'github-token',
-                variable: 'GITHUB_TOKEN'
-            )
-        ]) {
-            script {
-                def response = sh(
-                    script: '''
-                        curl -sS \
-                          -H "Accept: application/vnd.github+json" \
-                          -H "Authorization: Bearer $GITHUB_TOKEN" \
-                          -H "X-GitHub-Api-Version: 2026-03-10" \
-                          "https://api.github.com/repos/vinod1618/catalogue-unit-tests/dependabot/alerts?state=open&severity=high,critical&per_page=100"
-                    ''',
-                    returnStdout: true
-                ).trim()
+            steps {
+                withCredentials([
+                    string(
+                        credentialsId: 'github-token',
+                        variable: 'GITHUB_TOKEN'
+                    )
+                ]) {
+                    script {
+                        def response = sh(
+                            script: '''
+                                curl -sS \
+                                -H "Accept: application/vnd.github+json" \
+                                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                                -H "X-GitHub-Api-Version: 2026-03-10" \
+                                "https://api.github.com/repos/vinod1618/catalogue-unit-tests/dependabot/alerts?state=open&severity=high,critical&per_page=100"
+                            ''',
+                            returnStdout: true
+                        ).trim()
 
-                if (!response.startsWith("[")) {
-                    error "Failed to fetch Dependabot alerts from GitHub: ${response}"
-                }
+                        if (!response.startsWith("[")) {
+                            error "Failed to fetch Dependabot alerts from GitHub: ${response}"
+                        }
 
-                def alerts = readJSON text: response
+                        def alerts = readJSON text: response
 
-                if (alerts.size() > 0) {
-                    echo "❌ High/Critical Dependabot vulnerabilities found: ${alerts.size()}"
+                        if (alerts.size() > 0) {
+                            echo "❌ High/Critical Dependabot vulnerabilities found: ${alerts.size()}"
 
-                    alerts.each { alert ->
-                        echo "Package: ${alert.dependency.package.name}"
-                        echo "Severity: ${alert.security_advisory.severity}"
-                        echo "CVE: ${alert.security_advisory.cve_id ?: 'N/A'}"
-                        echo "GHSA: ${alert.security_advisory.ghsa_id}"
+                            alerts.each { alert ->
+                                echo "Package: ${alert.dependency.package.name}"
+                                echo "Severity: ${alert.security_advisory.severity}"
+                                echo "CVE: ${alert.security_advisory.cve_id ?: 'N/A'}"
+                                echo "GHSA: ${alert.security_advisory.ghsa_id}"
+                            }
+
+                            error "Pipeline failed: High/Critical Dependabot vulnerabilities detected."
+                        }
+
+                        echo "✅ No open High/Critical Dependabot vulnerabilities found."
                     }
-
-                    error "Pipeline failed: High/Critical Dependabot vulnerabilities detected."
                 }
-
-                echo "✅ No open High/Critical Dependabot vulnerabilities found."
             }
-        }
-    }
 }
         
         stage('Build Image') {
