@@ -159,6 +159,8 @@ pipeline {
             }
         }
 
+}
+
     // post build
     post { 
         always { 
@@ -172,5 +174,4 @@ pipeline {
             echo "pipeline failure"
         }
     }
-}
 }
