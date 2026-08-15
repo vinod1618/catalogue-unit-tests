@@ -136,11 +136,18 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 sh """
-                    # Download HTML template
                     wget -q -O html.tpl \
                         https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
 
-                    # Generate HTML report
+                    trivy image \
+                        --scanners vuln \
+                        --pkg-types os \
+                        --severity HIGH,MEDIUM,CRITICAL \
+                        --format template \
+                        --template "@html.tpl" \
+                        --output trivy-report.html \
+                        ${ACC_ID}.dkr.ecr.${region}.amazonaws.com/roboshop/catalogue:${appVersion}
+
                     trivy image \
                         --scanners vuln \
                         --pkg-types os \
@@ -148,19 +155,9 @@ pipeline {
                         --exit-code 1 \
                         --format table \
                         ${ACC_ID}.dkr.ecr.${region}.amazonaws.com/roboshop/catalogue:${appVersion}
-
-                    # Security gate
-                    # Pipeline fails if HIGH or CRITICAL vulnerabilities exist
-                    trivy image \
-                        --severity HIGH,CRITICAL \
-                        --exit-code 1 \
-                        --format table \
-                        ${ACC_ID}.dkr.ecr.${region}.amazonaws.com/roboshop/catalogue:${appVersion}
                 """
             }
         }
-
-}
 
     // post build
     post { 
