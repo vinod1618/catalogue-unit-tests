@@ -1,4 +1,21 @@
-@Library('jenkins-test-library')
+// @Library('jenkins-test-library')
+
+// def configMap = [
+//     project: "roboshop",
+//     component: "catalogue"
+// ]
+
+// echo "Triggering the library pipeline"
+
+// if ( env.BRANCH_NAME.equalsIgnoreCase('main') ){
+//     echo "checking later"
+
+// }
+// else{
+
+//     testPipeline(configMap)
+
+// }
 
 def configMap = [
     project: "roboshop",
@@ -13,6 +30,6 @@ if ( env.BRANCH_NAME.equalsIgnoreCase('main') ){
 }
 else{
 
-    testPipeline(configMap)
+    nodejsEKSPipeline(configMap)
 
 }
