@@ -1,16 +1,18 @@
 @Library('jenkins-test-library')
 
 def configMap = [
-    project: "roboshop",
+    project: "roboshop"
     component: "catalogue"
 ]
 
 echo "Triggering the library pipeline"
 
-if (env.BRANCH_NAME.equalsIgnoreCase('main')){
+if ( env.BRANCH_NAME.equalsIgnoreCase('main') ){
     echo "checking later"
 
 }
 else{
+
     testPipeline(configMap)
+
 }
