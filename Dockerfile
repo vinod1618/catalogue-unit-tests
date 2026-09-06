@@ -9,7 +9,7 @@
 # CMD ["node","server.js"]
 
 
-FROM node:current-alpine3.23 AS builder
+FROM alpine AS builder
 #this creats and move to that directory
 WORKDIR /app
 COPY package.json .
