@@ -14,6 +14,7 @@ FROM node:alpine AS builder
 WORKDIR /app
 COPY package.json .
 COPY *.js .
+RUN apk update && apk upgrade
 RUN npm install
 
 
