@@ -9,7 +9,7 @@
 # CMD ["node","server.js"]
 
 
-FROM node:current-alpine3.23 AS builder
+FROM node:alpine AS builder
 #this creats and move to that directory
 WORKDIR /app
 COPY package.json .
@@ -17,7 +17,7 @@ COPY *.js .
 RUN npm install
 
 
-FROM node:current-alpine3.23
+FROM node:alpine
 WORKDIR /app
 EXPOSE 8080
 COPY --from=builder /app /app
