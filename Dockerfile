@@ -9,7 +9,7 @@
 # CMD ["node","server.js"]
 
 
-FROM node:alpine:3.5.8-r0 AS builder
+FROM node:alpine AS builder
 #this creats and move to that directory
 WORKDIR /app
 COPY package.json .
@@ -18,7 +18,7 @@ RUN apk update && apk upgrade
 RUN npm install
 
 
-FROM node:alpine:3.5.8-r0
+FROM node:alpine
 RUN apk update && apk upgrade
 WORKDIR /app
 EXPOSE 8080
