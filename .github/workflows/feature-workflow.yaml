@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   feature-pipeline:   #job name
-    if: github.ref_name == 'feature-*'
+    #if: github.ref_name == 'feature-*'
     uses: vinod1618/workflows/.github/workflows/node-js-feature-pipeline.yaml@main
     with:
       project: 'roboshop'
