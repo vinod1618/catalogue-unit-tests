@@ -1,6 +1,8 @@
 name: feature pipeline
 # Controls when the workflow will run (Triggers on every code push)
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   feature-pipeline:   #job name
@@ -9,4 +11,3 @@ jobs:
     with:
       project: 'roboshop'
       component: 'catalogue'
-      
